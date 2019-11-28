@@ -301,6 +301,7 @@ static void print_usage(int argc, char **argv)
 	char *name = NULL;
 
 	name = strrchr(argv[0], '/');
+
 	printf("Usage: %s [OPTIONS] DIRECTORY\n", (name ? name + 1: argv[0]));
 	printf("Move crash reports from device to a local DIRECTORY.\n\n");
 	printf("  -e, --extract\t\textract raw crash report into separate '.crash' file\n");
@@ -321,6 +322,8 @@ int main(int argc, char* argv[])
 	idevice_error_t device_error = IDEVICE_E_SUCCESS;
 	lockdownd_error_t lockdownd_error = LOCKDOWN_E_SUCCESS;
 	afc_error_t afc_error = AFC_E_SUCCESS;
+
+  enum idevice_options lookup_opts = IDEVICE_LOOKUP_USBMUX | IDEVICE_LOOKUP_NETWORK;
 
 	int i;
 	const char* udid = NULL;
@@ -378,7 +381,7 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 
-	device_error = idevice_new(&device, udid);
+	device_error = idevice_new_with_options(&device, udid, lookup_opts);
 	if (device_error != IDEVICE_E_SUCCESS) {
 		if (udid) {
 			printf("No device found with udid %s, is it plugged in?\n", udid);
